@@ -48,7 +48,7 @@ void init_global_info(Global_Info* info) {
     info->total_number_of_job = 0;
     info->shortest_job_completion_time = -1; // -1 means not set
     info->longest_job_completion_time = -1;  // -1 means not set
-    info->average_completion = 114514.0f;
+    info->average_completion = 0.0;
     info->average_ready = 0.0;
     info->average_sleep = 0.0;
 }
