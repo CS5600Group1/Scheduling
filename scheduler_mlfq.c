@@ -37,6 +37,8 @@ static void update_statistics(Statistics *stats, Job *job, int completion_time) 
 
 // Helper function to print job information
 static void print_job_info(Job *job) {
+    // job->info.total already represents total time in system
+    // (it includes ready, sleep, and run time)
     printf("%-10d| %-19d| %-19d| %-19d|\n",
            job->PID, job->info.ready, job->info.sleep, job->info.total);
 }
@@ -134,7 +136,8 @@ void run_mlfq_scheduler(Job **jobs, int num_jobs) {
                             break;
                         }
                     }
-                    int remaining = job->service - job->info.total;
+                    int run_time = job->info.total - job->info.ready - job->info.sleep;
+                    int remaining = job->service - run_time;
                     enqueue(mlfq[0], job, remaining);
                 }
             }
@@ -193,7 +196,8 @@ void run_mlfq_scheduler(Job **jobs, int num_jobs) {
                 if (job_idx >= 0) {
                     int level = job_states[job_idx].current_queue_level;
                     job_states[job_idx].time_slice_used = 0;  // Reset time slice
-                    int remaining = completed_io_job->service - completed_io_job->info.total;
+                    int run_time = completed_io_job->info.total - completed_io_job->info.ready - completed_io_job->info.sleep;
+                    int remaining = completed_io_job->service - run_time;
                     enqueue(mlfq[level], completed_io_job, remaining);
                 }
 
@@ -245,8 +249,9 @@ void run_mlfq_scheduler(Job **jobs, int num_jobs) {
             job_states[current_job_index].time_slice_used++;
             current_time_slice++;
 
-            // Check if job is complete
-            if (current_job->info.total >= current_job->service) {
+            // Check if job is complete (check CPU time, not total time)
+            int run_time = current_job->info.total - current_job->info.ready - current_job->info.sleep;
+            if (run_time >= current_job->service) {
                 // Job completed
                 update_statistics(&stats, current_job, current_clock() + 1);
                 current_job = NULL;
@@ -255,7 +260,7 @@ void run_mlfq_scheduler(Job **jobs, int num_jobs) {
                 // Check for I/O request
                 if (IO_request()) {
                     // Move to I/O queue (Rule 4: didn't use full slice, keep priority)
-                    int remaining = current_job->service - current_job->info.total;
+                    int remaining = current_job->service - run_time;
                     enqueue(io_queue, current_job, remaining);
                     current_job = NULL;
                     current_job_index = -1;
@@ -267,7 +272,7 @@ void run_mlfq_scheduler(Job **jobs, int num_jobs) {
                     }
                     job_states[current_job_index].time_slice_used = 0;
 
-                    int remaining = current_job->service - current_job->info.total;
+                    int remaining = current_job->service - run_time;
                     enqueue(mlfq[job_states[current_job_index].current_queue_level], current_job, remaining);
                     current_job = NULL;
                     current_job_index = -1;
@@ -302,17 +307,7 @@ void run_mlfq_scheduler(Job **jobs, int num_jobs) {
 
     stats.total_simulation_time = current_clock();
 
-    // Print results
-    printf("Job#      | Total time         | Total time         | Total time         |\n");
-    printf("          | in ready to run    | in sleeping on     | in system          |\n");
-    printf("          | state              | I/O state          |                    |\n");
-    printf("==========+====================+====================+====================+\n");
-
-    for (int i = 0; i < num_jobs; i++) {
-        print_job_info(jobs[i]);
-    }
-
-    print_statistics(&stats);
+    
 
     // Cleanup
     for (int i = 0; i < MLFQ_NUM_QUEUES; i++) {
