@@ -42,6 +42,7 @@ void wait(Job *job) {
         return;
     }
     job->info.ready++;
+    job->info.total++;
 }
 
 void sleep(Job *job) {
