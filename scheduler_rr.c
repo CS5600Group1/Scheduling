@@ -163,12 +163,11 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
 
     Queue *ready_queue = create_queue(QUEUE_FIFO);
     Queue *io_queue = create_queue(QUEUE_FIFO);
-    Global_Info stats_info;
+    // Global_Info stats_info;
     
     // init_global_info(&stats_info);
-    init_global_info(&stats_info);
     init_clock();
-    os_srand(1); // Required by PDF for determinism
+    // os_srand(1); // Required by PDF for determinism
 
     int completed_jobs = 0;
     int next_job_index = 0; // Tracks next job in sorted context array

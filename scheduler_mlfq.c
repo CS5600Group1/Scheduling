@@ -37,9 +37,8 @@ static void update_statistics(Statistics *stats, Job *job, int completion_time) 
 
 // Helper function to print job information
 static void print_job_info(Job *job) {
-    int total_time = job->info.ready + job->info.sleep + job->info.total;
     printf("%-10d| %-19d| %-19d| %-19d|\n",
-           job->PID, job->info.ready, job->info.sleep, total_time);
+           job->PID, job->info.ready, job->info.sleep, job->info.total);
 }
 
 // Helper function to print statistics
