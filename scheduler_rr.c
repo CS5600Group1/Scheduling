@@ -84,7 +84,7 @@ static void process_io_queue(Queue* io_queue, Queue* ready_queue, RRJobContext* 
         // Job was in I/O queue for a tick
         if (ctx) sleep(ctx->job);
 
-        if (IO_complete() == 1) { // I/O complete [cite: 53-58]
+        if (IO_complete() == 1) { // I/O complete
             completed_jobs[completed_count++] = job;
         } else { // I/O not complete
             enqueue(temp_io_queue, job, ctx ? ctx->remaining_time : 0);
@@ -97,7 +97,7 @@ static void process_io_queue(Queue* io_queue, Queue* ready_queue, RRJobContext* 
     }
     destroy_queue(temp_io_queue);
 
-    // 3. Handle ties: sort completed jobs by PID [cite: 102-104]
+    // 3. Handle ties: sort completed jobs by PID
     if (completed_count > 1) {
         for (int i = 1; i < completed_count; i++) {
             Job* key = completed_jobs[i];
@@ -167,7 +167,7 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
     
     // init_global_info(&stats_info);
     init_clock();
-    os_srand(1); // Required by PDF for determinism [cite: 69, 181-182]
+    os_srand(1); // Required by PDF for determinism
 
     int completed_jobs = 0;
     int next_job_index = 0; // Tracks next job in sorted context array
@@ -190,13 +190,13 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
             total_jobs_in_system++;
         }
         
-        // Step 2: Process I/O completions (Strict PDF order) [cite: 79-83]
+        // Step 2: Process I/O completions (Strict PDF order)
         process_io_queue(io_queue, ready_queue, contexts, n);
 
         // Step 3: Handle running job logic
         if (current_job_ctx != NULL) {
             
-            // Check for Time Slice Expiry [cite: 29, 91-92]
+            // Check for Time Slice Expiry
             if (current_job_ctx->time_slice_used >= time_quantum) {
                 current_job_ctx->state = RR_JOB_STATE_READY;
                 enqueue(ready_queue, current_job_ctx->job, current_job_ctx->remaining_time);
@@ -227,13 +227,13 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
             // Check for Job Completion
             if (current_job_ctx->remaining_time <= 0) {
                 current_job_ctx->state = RR_JOB_STATE_DONE;
-                current_job_ctx->job->info.completion_time = clock_tick + 1; // Job completes at tick+1
-                current_job_ctx->job->info.total = current_job_ctx->job->info.completion_time - current_job_ctx->job->arrival;
+                //current_job_ctx->job->info.completion_time = clock_tick + 1; // Job completes at tick+1
+                //current_job_ctx->job->info.total = current_job_ctx->job->info.completion_time - current_job_ctx->job->arrival;
                 completed_jobs++;
                 total_jobs_in_system--;
                 current_job_ctx = NULL;
             } 
-            // Check for I/O Request [cite: 30, 87-91]
+            // Check for I/O Request
             else if (IO_request()) {
                 current_job_ctx->state = RR_JOB_STATE_IO;
                 enqueue(io_queue, current_job_ctx->job, current_job_ctx->remaining_time);
@@ -268,11 +268,12 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
 
     // 3. Finalization
     // Must pass original 'jobs' array to stats
-    // calculate_and_print_final_stats(&stats_info, jobs, n, current_clock());
+    calculate_and_print_final_stats(&stats_info, jobs, n, current_clock());
 
     // 4. Cleanup
     destroy_queue(io_queue);
     destroy_queue(ready_queue);
     free(contexts);
 }
+
 
