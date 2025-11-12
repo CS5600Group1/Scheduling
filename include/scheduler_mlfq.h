@@ -16,6 +16,16 @@
 #define MLFQ_TIME_SLICE_Q2 32
 #define MLFQ_BOOST_INTERVAL 100
 
+// Statistics structure
+typedef struct {
+    int total_jobs;
+    int total_simulation_time;
+    int shortest_job_time;
+    int longest_job_time;
+    int total_ready_time;
+    int total_sleep_time;
+} Statistics;
+
 // MLFQ structure to track job state
 typedef struct {
     int current_queue_level;    // Current queue level (0-2)
