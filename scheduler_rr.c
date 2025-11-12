@@ -5,6 +5,7 @@
 #include "include/job.h"
 #include "include/queue.h"
 #include "include/utils.h"
+#include "include/clock.h"
 
 // --- Context and State for Round Robin ---
 
@@ -18,7 +19,7 @@ typedef enum {
 
 typedef struct {
     Job *job;
-    int remaining_time;
+    //int remaining_time;
     int time_slice_used;
     RRJobState state;
 } RRJobContext;
@@ -87,7 +88,7 @@ static void process_io_queue(Queue* io_queue, Queue* ready_queue, RRJobContext* 
         if (IO_complete() == 1) { // I/O complete
             completed_jobs[completed_count++] = job;
         } else { // I/O not complete
-            enqueue(temp_io_queue, job, ctx ? ctx->remaining_time : 0);
+            enqueue(temp_io_queue, job, 0);
         }
     }
 
@@ -116,7 +117,7 @@ static void process_io_queue(Queue* io_queue, Queue* ready_queue, RRJobContext* 
         if (ctx) {
             ctx->state = RR_JOB_STATE_READY;
             ctx->time_slice_used = 0; // Reset time slice on I/O completion
-            enqueue(ready_queue, ctx->job, ctx->remaining_time);
+            enqueue(ready_queue, ctx->job, 0);
         }
     }
 }
@@ -151,7 +152,6 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
 
     for (int i = 0; i < n; ++i) {
         contexts[i].job = jobs[i];
-        contexts[i].remaining_time = (jobs[i] != NULL) ? jobs[i]->service : 0;
         contexts[i].state = RR_JOB_STATE_NEW;
         contexts[i].time_slice_used = 0;
         // Ensure Job's info struct is initialized
@@ -166,6 +166,7 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
     Global_Info stats_info;
     
     // init_global_info(&stats_info);
+    init_global_info(&stats_info);
     init_clock();
     os_srand(1); // Required by PDF for determinism
 
@@ -221,11 +222,10 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
         if (current_job_ctx != NULL) {
             job_running_or_waiting = 1; // Mark CPU as active
             run(current_job_ctx->job);
-            current_job_ctx->remaining_time--;
             current_job_ctx->time_slice_used++;
 
             // Check for Job Completion
-            if (current_job_ctx->remaining_time <= 0) {
+            if (current_job_ctx->job->info.total >= current_job_ctx->job->service) {
                 current_job_ctx->state = RR_JOB_STATE_DONE;
                 //current_job_ctx->job->info.completion_time = clock_tick + 1; // Job completes at tick+1
                 //current_job_ctx->job->info.total = current_job_ctx->job->info.completion_time - current_job_ctx->job->arrival;
@@ -236,7 +236,7 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
             // Check for I/O Request
             else if (IO_request()) {
                 current_job_ctx->state = RR_JOB_STATE_IO;
-                enqueue(io_queue, current_job_ctx->job, current_job_ctx->remaining_time);
+                enqueue(io_queue, current_job_ctx->job, 0);
                 current_job_ctx = NULL;
             }
         }
@@ -275,6 +275,7 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
     destroy_queue(ready_queue);
     free(contexts);
 }
+
 
 
 
