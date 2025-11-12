@@ -2,3 +2,7 @@
 inputs
 *.exe
 scheduling
+scheduling_sjf
+scheduling_rr
+scheduling_mlfq
+*.o

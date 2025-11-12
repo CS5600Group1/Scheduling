@@ -17,13 +17,14 @@ typedef struct {
     int total_simulate_time;
     int total_number_of_job;
     int shortest_job_completion_time;
-    int Longest_job_completion_time;
+    int longest_job_completion_time;
     int average_completion;
     int average_ready;
+    int average_sleep;
 } Global_Info;
 
-void init_global_info(Global_Info *info, ...);
-void update_global_info(Global_Info *info);
+void init_global_info(Global_Info *info);
+void calculate_and_print_final_stats(Global_Info* info, Job** all_jobs, int n, int total_sim_time);
 
 void schedule(Job **jobs, int n, SchedulerPolicy policy, int time_quantum);
 
