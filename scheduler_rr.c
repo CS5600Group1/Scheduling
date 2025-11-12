@@ -1,3 +1,14 @@
+#include <stdio.h>
+
+#include "include/scheduler.h"
+
+void schedule_rr(Job **jobs, int n, int time_quantum) {
+    (void)jobs;
+    (void)n;
+    (void)time_quantum;
+    printf("Round Robin scheduler not implemented yet.\n");
+}
+
 #include "scheduler.h" // Includes new function declarations
 #include <stdio.h>
 #include <stdlib.h>

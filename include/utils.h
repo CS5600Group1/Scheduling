@@ -10,26 +10,10 @@
 #define CHANCE_OF_IO_REQUEST 10
 #define CHANCE_OF_IO_COMPLETE 4
 
-void os_srand(int seed){
-    srand(seed);
-}
+void os_srand(unsigned int seed);
+int os_rand(void);
 
-void os_rand() {
-    return rand();
-}
-
-int IO_request(){
-    if ( os_rand() % CHANCE_OF_IO_REQUEST == 0 )
-        return 1;
-    else
-        return 0;
-}
-
-int IO_complete(){
-    if ( os_rand() % CHANCE_OF_IO_REQUEST == 0 )
-        return 1;
-    else
-        return 0;
-}
+int IO_request(void);
+int IO_complete(void);
 
 #endif //UTILS_H

@@ -16,14 +16,13 @@ typedef struct {
     int arrival;
     int service;
     int priority;
-
     OutputBlock info;
 } Job;
 
 void init_OutputBlock(OutputBlock *info);
 void init_Job(Job **job, int pid, int arrival, int service, int priority);
 
-OutputBlock get_Job_info(Job *job);
+OutputBlock get_Job_info(const Job *job);
 
 void wait(Job *job);
 void run(Job *job);
