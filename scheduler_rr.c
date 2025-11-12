@@ -268,12 +268,13 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
 
     // 3. Finalization
     // Must pass original 'jobs' array to stats
-    calculate_and_print_final_stats(&stats_info, jobs, n, current_clock());
+    //calculate_and_print_final_stats(&stats_info, jobs, n, current_clock());
 
     // 4. Cleanup
     destroy_queue(io_queue);
     destroy_queue(ready_queue);
     free(contexts);
 }
+
 
 
