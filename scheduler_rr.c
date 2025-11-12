@@ -185,7 +185,7 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
         // Step 1: Enqueue new arrivals
         while (next_job_index < n && contexts[next_job_index].job->arrival <= clock_tick) {
             contexts[next_job_index].state = RR_JOB_STATE_READY;
-            enqueue(ready_queue, contexts[next_job_index].job, contexts[next_job_index].remaining_time);
+            enqueue(ready_queue, contexts[next_job_index].job, 0);
             next_job_index++;
             total_jobs_in_system++;
         }
@@ -199,7 +199,7 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
             // Check for Time Slice Expiry
             if (current_job_ctx->time_slice_used >= time_quantum) {
                 current_job_ctx->state = RR_JOB_STATE_READY;
-                enqueue(ready_queue, current_job_ctx->job, current_job_ctx->remaining_time);
+                enqueue(ready_queue, current_job_ctx->job, 0);
                 current_job_ctx = NULL;
             }
         }
