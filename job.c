@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "job.h"
+#include "include/job.h"
 
 void init_OutputBlock(OutputBlock *info) {
     if (info == NULL) {
