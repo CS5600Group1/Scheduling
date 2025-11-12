@@ -74,11 +74,11 @@ void run_mlfq_scheduler(Job **jobs, int num_jobs) {
     }
 
     os_srand(1);
-    int clock = 0;
+    init_clock();  // Initialize the global clock
     int next_job_index = 0;  // Index of next job to arrive
     int boost_counter = 0;   // Counter for priority boost
 
-    // Create 3 MLFQ queues (all FIFO, Round Robin within each level)
+    // Create 3 MLFQ queues )
     Queue *mlfq[MLFQ_NUM_QUEUES];
     for (int i = 0; i < MLFQ_NUM_QUEUES; i++) {
         mlfq[i] = create_queue(QUEUE_FIFO);
@@ -151,7 +151,7 @@ void run_mlfq_scheduler(Job **jobs, int num_jobs) {
         }
 
         // Step 1: Add new incoming jobs to highest priority queue (Rule 3)
-        while (next_job_index < num_jobs && jobs[next_job_index]->arrival == clock) {
+        while (next_job_index < num_jobs && jobs[next_job_index]->arrival == current_clock()) {
             Job *new_job = jobs[next_job_index];
             job_states[next_job_index].current_queue_level = 0;  // Rule 3
             job_states[next_job_index].time_slice_used = 0;
@@ -204,21 +204,7 @@ void run_mlfq_scheduler(Job **jobs, int num_jobs) {
             }
         }
 
-        // Step 3: Check if current job's time slice expired
-        if (current_job != NULL && current_job_index >= 0) {
-            int level = job_states[current_job_index].current_queue_level;
-            int time_slice = get_time_slice(level);
-
-            if (job_states[current_job_index].time_slice_used >= time_slice) {
-                // Time slice expired, put back in queue
-                int remaining = current_job->service - current_job->info.total;
-                enqueue(mlfq[level], current_job, remaining);
-                current_job = NULL;
-                current_job_index = -1;
-            }
-        }
-
-        // Step 4: If no current job, select next from highest priority non-empty queue (Rule 1 & 2)
+        // Step 3: If no current job, select next from highest priority non-empty queue (Rule 1 & 2)
         if (current_job == NULL) {
             for (int level = 0; level < MLFQ_NUM_QUEUES; level++) {
                 if (!is_empty(mlfq[level])) {
@@ -238,6 +224,21 @@ void run_mlfq_scheduler(Job **jobs, int num_jobs) {
             }
         }
 
+        // Step 4: Update waiting times for jobs in all queues (BEFORE running current job)
+        for (int level = 0; level < MLFQ_NUM_QUEUES; level++) {
+            QueueNode *node = mlfq[level]->head;
+            while (node != NULL) {
+                wait(node->job);
+                node = node->next;
+            }
+        }
+
+        QueueNode *node = io_queue->head;
+        while (node != NULL) {
+            sleep(node->job);
+            node = node->next;
+        }
+
         // Step 5: Run current job
         if (current_job != NULL && current_job_index >= 0) {
             run(current_job);
@@ -247,7 +248,7 @@ void run_mlfq_scheduler(Job **jobs, int num_jobs) {
             // Check if job is complete
             if (current_job->info.total >= current_job->service) {
                 // Job completed
-                update_statistics(&stats, current_job, clock + 1);
+                update_statistics(&stats, current_job, current_clock() + 1);
                 current_job = NULL;
                 current_job_index = -1;
             } else {
@@ -274,23 +275,8 @@ void run_mlfq_scheduler(Job **jobs, int num_jobs) {
             }
         }
 
-        // Step 6: Update waiting times for jobs in all queues
-        for (int level = 0; level < MLFQ_NUM_QUEUES; level++) {
-            QueueNode *node = mlfq[level]->head;
-            while (node != NULL) {
-                wait(node->job);
-                node = node->next;
-            }
-        }
-
-        QueueNode *node = io_queue->head;
-        while (node != NULL) {
-            sleep(node->job);
-            node = node->next;
-        }
-
         // Increment clock and boost counter
-        clock++;
+        next_tick();
         boost_counter++;
 
         // Check termination condition
@@ -308,13 +294,25 @@ void run_mlfq_scheduler(Job **jobs, int num_jobs) {
         }
 
         // Safety check
-        if (clock > 100000) {
+        if (current_clock() > 100000) {
             printf("Error: Simulation exceeded maximum time limit\n");
             break;
         }
     }
 
-    stats.total_simulation_time = clock;
+    stats.total_simulation_time = current_clock();
+
+    // Print results
+    printf("Job#      | Total time         | Total time         | Total time         |\n");
+    printf("          | in ready to run    | in sleeping on     | in system          |\n");
+    printf("          | state              | I/O state          |                    |\n");
+    printf("==========+====================+====================+====================+\n");
+
+    for (int i = 0; i < num_jobs; i++) {
+        print_job_info(jobs[i]);
+    }
+
+    print_statistics(&stats);
 
     // Cleanup
     for (int i = 0; i < MLFQ_NUM_QUEUES; i++) {
