@@ -121,3 +121,13 @@ void mlfs();
 // main.c
 
 ```
+
+## How to run
+
+``` txt
+Usage:  %s [--policy sjf|rr|mlfq] [--quantum N]
+        Reads job definitions from stdin in the format PID:Arrival:Service:Priority.\n
+        Examples:
+              %s --policy sjf < input.txt
+              %s --policy rr --quantum 4 < input.txt
+```

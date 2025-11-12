@@ -5,6 +5,7 @@
 
 #include "include/job.h"
 #include "include/scheduler.h"
+#include "include/utils.h"
 
 static void trim_trailing(char *s) {
     if (s == NULL) return;

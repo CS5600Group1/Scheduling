@@ -6,8 +6,8 @@
 #ifndef SCHEDULER_MLFQ_H
 #define SCHEDULER_MLFQ_H
 
-#include "include/job.h"
-#include "include/queue.h"
+#include "job.h"
+#include "queue.h"
 
 // MLFQ Configuration
 #define MLFQ_NUM_QUEUES 3

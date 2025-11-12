@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "scheduler.h" // Requires scheduler.h
-#include "job.h"
-#include "queue.h"
-#include "clock.h"
-#include "utils.h"
+
+#include "include/scheduler.h"
+#include "include/job.h"
+#include "include/queue.h"
+#include "include/utils.h"
 
 // --- Context and State for Round Robin ---
 
@@ -165,7 +165,7 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
     Queue *io_queue = create_queue(QUEUE_FIFO);
     Global_Info stats_info;
     
-    init_global_info(&stats_info);
+    // init_global_info(&stats_info);
     init_clock();
     os_srand(1); // Required by PDF for determinism [cite: 69, 181-182]
 
@@ -268,7 +268,7 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
 
     // 3. Finalization
     // Must pass original 'jobs' array to stats
-    calculate_and_print_final_stats(&stats_info, jobs, n, current_clock());
+    // calculate_and_print_final_stats(&stats_info, jobs, n, current_clock());
 
     // 4. Cleanup
     destroy_queue(io_queue);

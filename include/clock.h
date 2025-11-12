@@ -5,16 +5,8 @@
 #ifndef CLOCK_H
 #define CLOCK_H
 
-static int clock_time = 0;
-
-void init_clock() {
-    clock_time = 0;
-}
-int current_clock() {
-    return clock_time;
-}
-void next_tick() {
-    clock_time++;
-}
+void init_clock(void);
+int current_clock(void);
+void next_tick(void);
 
 #endif //CLOCK_H
