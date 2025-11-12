@@ -307,7 +307,6 @@ void run_mlfq_scheduler(Job **jobs, int num_jobs) {
 
     stats.total_simulation_time = current_clock();
 
-    
 
     // Cleanup
     for (int i = 0; i < MLFQ_NUM_QUEUES; i++) {
