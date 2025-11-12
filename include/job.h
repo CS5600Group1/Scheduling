@@ -23,11 +23,10 @@ typedef struct {
 void init_OutputBlock(OutputBlock *info);
 void init_Job(Job **job, int pid, int arrival, int service, int priority);
 
-
 OutputBlock get_Job_info(Job *job);
-void run(Job *job);
 
-int IO_request();
-int IO_complete();
+void wait(Job *job);
+void run(Job *job);
+void sleep(Job *job);
 
 #endif //JOB_H

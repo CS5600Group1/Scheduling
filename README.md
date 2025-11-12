@@ -2,7 +2,7 @@
 CS5600 Course Project3. Design and Develop a scheduler for a basic operating system.
 
 ```C
-//queue.h
+//queue.h DONE
 
 struct Queue{
     Node *head;
@@ -22,24 +22,36 @@ bool empty(Queue*)
 bool getHead(Queue*)
 bool getTail(Queue*)
 
-//job.h
+//job.h DONE
 
-struct Job{
+typedef struct {
+    int ready;
+    int sleep;
+    int total;
+} OutputBlock;
+
+typedef struct {
     int PID;
     int arrival;
     int service;
     int priority;
-    
+
     OutputBlock info;
-};
+} Job;
 
-struct OuputBlock{
-    // todo: output data
-};
+void init_OutputBlock(OutputBlock *info);
+void init_Job(Job **job, int pid, int arrival, int service, int priority);
 
-OutputBlock get_Job_info(Job*);
+OutputBlock get_Job_info(Job *job);
 
-void run();
+void wait(Job *job);
+void run(Job *job);
+void sleep(Job *job);
+
+//utils DONE
+
+void os_srand(int seed);
+void os_rand();
 
 int IO_request();
 int IO_complete();
