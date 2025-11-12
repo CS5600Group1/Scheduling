@@ -125,9 +125,22 @@ void mlfs();
 ## How to run
 
 ``` txt
+First, use "make" or "make scheduling".
+
 Usage:  %s [--policy sjf|rr|mlfq] [--quantum N]
         Reads job definitions from stdin in the format PID:Arrival:Service:Priority.\n
         Examples:
               %s --policy sjf < input.txt
               %s --policy rr --quantum 4 < input.txt
+
+             
+For seperate test, Usage:
+P-sjf: 
+make run-sjf INPUT=path/to/input_file.txt
+
+RR:
+make run-rr INPUT=path/to/input_file.txt QUANTUM=N
+
+MLFQ:
+make run-mlfq INPUT=path/to/input_file.txt
 ```
