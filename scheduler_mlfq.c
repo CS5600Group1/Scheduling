@@ -317,18 +317,6 @@ void run_mlfq_scheduler(Job **jobs, int num_jobs) {
 
     stats.total_simulation_time = clock;
 
-    // Print results
-    printf("Job#      | Total time         | Total time         | Total time         |\n");
-    printf("          | in ready to run    | in sleeping on     | in system          |\n");
-    printf("          | state              | I/O state          |                    |\n");
-    printf("==========+====================+====================+====================+\n");
-
-    for (int i = 0; i < num_jobs; i++) {
-        print_job_info(jobs[i]);
-    }
-
-    print_statistics(&stats);
-
     // Cleanup
     for (int i = 0; i < MLFQ_NUM_QUEUES; i++) {
         destroy_queue(mlfq[i]);

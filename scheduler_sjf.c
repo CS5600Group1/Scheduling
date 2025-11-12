@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include "include/scheduler.h"
 #include "include/queue.h"
@@ -17,6 +18,7 @@ typedef enum {
 typedef struct {
     Job *job;
     int remaining_time;
+    bool isStarted;
     SJFJobState state;
 } SJFJobContext;
 
@@ -70,7 +72,7 @@ static void process_io_queue(Queue *io_queue, Queue *ready_queue, SJFJobContext 
 
 static void accumulate_wait_time(SJFJobContext *contexts, int count) {
     for (int i = 0; i < count; ++i) {
-        if (contexts[i].state == JOB_STATE_READY) {
+        if (contexts[i].state == JOB_STATE_READY && contexts[i].isStarted == false) {
             wait(contexts[i].job);
         }
     }
@@ -90,6 +92,7 @@ void schedule_sjf(Job **jobs, int n) {
     for (int i = 0; i < n; ++i) {
         contexts[i].job = jobs[i];
         contexts[i].remaining_time = (jobs[i] != NULL) ? jobs[i]->service : 0;
+        contexts[i].isStarted = false;
         contexts[i].state = JOB_STATE_NEW;
     }
 
@@ -134,6 +137,7 @@ void schedule_sjf(Job **jobs, int n) {
                 current = find_context(contexts, n, next_job);
                 if (current != NULL) {
                     current->state = JOB_STATE_RUNNING;
+                    current->isStarted = true;
                 }
             }
         }
@@ -155,11 +159,11 @@ void schedule_sjf(Job **jobs, int n) {
             }
         }
 
+        next_tick();
+
         if (completed_jobs >= n) {
             break;
         }
-
-        next_tick();
     }
 
     destroy_queue(io_queue);

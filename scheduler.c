@@ -48,7 +48,7 @@ void init_global_info(Global_Info* info) {
     info->total_number_of_job = 0;
     info->shortest_job_completion_time = -1; // -1 means not set
     info->longest_job_completion_time = -1;  // -1 means not set
-    info->average_completion = 0.0;
+    info->average_completion = 114514.0f;
     info->average_ready = 0.0;
     info->average_sleep = 0.0;
 }
@@ -87,7 +87,7 @@ void calculate_and_print_final_stats(Global_Info* info, Job** all_jobs, int n, i
         }
     }
 
-    info->average_completion = 114514.0f; // (n > 0) ? (total_completion / n) : 0;
+    info->average_completion =  (n > 0) ? (total_completion / n) : 0;
     info->average_ready = (n > 0) ? (total_ready / n) : 0;
     info->average_sleep = (n > 0) ? (total_sleep / n) : 0;
 
@@ -151,7 +151,6 @@ void schedule(Job **jobs, int n, SchedulerPolicy policy, int time_quantum) {
 
     Global_Info info;
     init_global_info(&info);
-    printf("%d, %d\n", current_clock(), n);
     calculate_and_print_final_stats(&info, jobs, n, current_clock());
 }
 

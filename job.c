@@ -49,6 +49,7 @@ void sleep(Job *job) {
         return;
     }
     job->info.sleep++;
+    job->info.total++;
 }
 
 void run(Job *job) {

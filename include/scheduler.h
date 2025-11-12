@@ -18,9 +18,9 @@ typedef struct {
     int total_number_of_job;
     int shortest_job_completion_time;
     int longest_job_completion_time;
-    int average_completion;
-    int average_ready;
-    int average_sleep;
+    double average_completion;
+    double average_ready;
+    double average_sleep;
 } Global_Info;
 
 void init_global_info(Global_Info *info);
