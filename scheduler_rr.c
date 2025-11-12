@@ -4,6 +4,7 @@
 #include "job.h"
 #include "queue.h"
 #include "clock.h"
+#include "utils.h"
 
 // --- Context and State for Round Robin ---
 
@@ -274,3 +275,4 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
     destroy_queue(ready_queue);
     free(contexts);
 }
+
