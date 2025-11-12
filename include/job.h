@@ -9,6 +9,7 @@ typedef struct {
     int ready;
     int sleep;
     int total;
+    int completion_time;
 } OutputBlock;
 
 typedef struct {
