@@ -36,27 +36,27 @@ static void update_statistics(Statistics *stats, Job *job, int completion_time) 
 }
 
 // Helper function to print job information
-static void print_job_info(Job *job) {
-    // job->info.total already represents total time in system
-    // (it includes ready, sleep, and run time)
-    printf("%-10d| %-19d| %-19d| %-19d|\n",
-           job->PID, job->info.ready, job->info.sleep, job->info.total);
-}
+// static void print_job_info(Job *job) {
+//     // job->info.total already represents total time in system
+//     // (it includes ready, sleep, and run time)
+//     printf("%-10d| %-19d| %-19d| %-19d|\n",
+//            job->PID, job->info.ready, job->info.sleep, job->info.total);
+// }
 
 // Helper function to print statistics
-static void print_statistics(Statistics *stats) {
-    printf("==========+====================+====================+====================+\n");
-    if (stats->total_jobs > 0) {
-        printf("Avg       | %-19d| N/A                | N/A                |\n",
-               stats->total_ready_time / stats->total_jobs);
-    }
-    printf("\n");
-    printf("Total simulation time: %d\n", stats->total_simulation_time);
-    if (stats->total_jobs > 0) {
-        printf("Shortest job completion time: %d\n", stats->shortest_job_time);
-        printf("Longest job completion time: %d\n", stats->longest_job_time);
-    }
-}
+// static void print_statistics(Statistics *stats) {
+//     printf("==========+====================+====================+====================+\n");
+//     if (stats->total_jobs > 0) {
+//         printf("Avg       | %-19d| N/A                | N/A                |\n",
+//                stats->total_ready_time / stats->total_jobs);
+//     }
+//     printf("\n");
+//     printf("Total simulation time: %d\n", stats->total_simulation_time);
+//     if (stats->total_jobs > 0) {
+//         printf("Shortest job completion time: %d\n", stats->shortest_job_time);
+//         printf("Longest job completion time: %d\n", stats->longest_job_time);
+//     }
+// }
 
 // Helper function to get time slice for a queue level
 static int get_time_slice(int queue_level) {

@@ -164,7 +164,7 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
 
     Queue *ready_queue = create_queue(QUEUE_FIFO);
     Queue *io_queue = create_queue(QUEUE_FIFO);
-    Global_Info stats_info;
+    // Global_Info stats_info;
 
     // init_global_info(&stats_info);
     init_clock();
@@ -181,7 +181,7 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
         int clock_tick = current_clock();
 
         // Flag: is any job running or waiting?
-        int job_running_or_waiting = 0;
+        // int job_running_or_waiting = 0;
 
         // Step 1: Enqueue new arrivals
         while (next_job_index < n && contexts[next_job_index].job->arrival <= clock_tick) {
@@ -220,7 +220,7 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
 
         // Step 6: Run the current job
         if (current_job_ctx != NULL) {
-            job_running_or_waiting = 1; // Mark CPU as active
+            // job_running_or_waiting = 1; // Mark CPU as active
             run(current_job_ctx->job);
             current_job_ctx->remaining_time--;
             current_job_ctx->time_slice_used++;
@@ -243,9 +243,9 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
         }
 
         // Check if any job is in I/O queue
-        if (!is_empty(io_queue)) {
-            job_running_or_waiting = 1;
-        }
+        // if (!is_empty(io_queue)) {
+        //     job_running_or_waiting = 1;
+        // }
 
         // PDF idle process check:
         // If no job is running,
@@ -253,6 +253,10 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
         // and ready queue is empty,
         // and I/O queue is empty,
         // then exit.
+
+        // Step 7: Advance clock
+        next_tick();
+
         if (current_job_ctx == NULL && is_empty(ready_queue) && is_empty(io_queue) && next_job_index >= n) {
              break; // All jobs are processed
         }
@@ -262,9 +266,6 @@ void schedule_rr(Job** jobs, int n, int time_quantum) {
             fprintf(stderr, "Error: RR simulation exceeded maximum time limit\n");
             break;
         }
-
-        // Step 7: Advance clock
-        next_tick();
     }
 
     // 3. Finalization
